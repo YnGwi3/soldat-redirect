@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Launch Soldat Server</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url('https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/638490/ss_fbbd62dc7b059ae380c595ca1ee6acedcbcf2f4a.1920x1080.jpg?t=1662126960') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 2rem;
+            border-radius: 10px;
+            border: 2px solid #4CAF50;
+            max-width: 600px;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+        }
+
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.7);
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: 1px solid #4CAF50;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            margin: 0 0.5rem;
+        }
+
+        a:hover {
+            background-color: #4CAF50;
+            color: black;
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.8);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #4CAF50;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+    <script>
+        function getQueryParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        function launchSoldat() {
+            const ip = getQueryParam('ip');
+            const port = getQueryParam('port');
+            const password = getQueryParam('password');
+
+            if (!ip || !port) {
+                document.querySelector('.container').innerHTML = `
+                    <h1>Error</h1>
+                    <p>IP and port must be specified in the URL.</p>
+                    <p>Example: ?ip=127.0.0.1&port=23073</p>
+                `;
+                return;
+            }
+
+            // Build the Soldat URL
+            let soldatUrl = `soldat://${ip}:${port}`;
+            if (password) soldatUrl += `/${password}`;
+
+            // Create hidden iframe to handle the protocol
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = soldatUrl;
+            document.body.appendChild(iframe);
+            
+            // Show loading state
+            document.getElementById('status').innerHTML = `
+                <span class="loading"></span> Connecting to server...
+            `;
+
+            // Remove iframe after delay
+            setTimeout(() => {
+                document.body.removeChild(iframe);
+            }, 1000);
+        }
+
+        // Auto-launch when page loads
+        window.onload = launchSoldat;
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Soldat Server Connector</h1>
+        <p id="status">Launching Soldat game...</p>
+        <p>
+            <a href="javascript:launchSoldat()">Retry Connection</a>
+            <a href="https://www.soldat.pl" target="_blank">Download Soldat</a>
+        </p>
+    </div>
+</body>
+</html>
