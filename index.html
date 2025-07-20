@@ -7,7 +7,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+            background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), 
                         url('https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/638490/ss_fbbd62dc7b059ae380c595ca1ee6acedcbcf2f4a.1920x1080.jpg?t=1662126960') no-repeat center center fixed;
             background-size: cover;
             color: white;
@@ -19,56 +19,86 @@
             text-align: center;
         }
 
+        .author-badge {
+            position: absolute;
+            top: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 1px solid #1a9fff;
+            box-shadow: 0 0 15px rgba(26, 159, 255, 0.5);
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #1a9fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 100;
+        }
+
         .container {
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 2rem;
-            border-radius: 10px;
-            border: 2px solid #4CAF50;
-            max-width: 600px;
-            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+            background-color: rgba(0, 0, 0, 0.75);
+            padding: 2.5rem;
+            border-radius: 12px;
+            border: 2px solid #1a9fff;
+            max-width: 650px;
+            box-shadow: 0 0 25px rgba(26, 159, 255, 0.4);
+            backdrop-filter: blur(4px);
+            margin-top: 30px;
         }
 
         h1 {
-            color: #4CAF50;
-            margin-bottom: 1.5rem;
-            text-shadow: 0 0 10px rgba(76, 175, 80, 0.7);
+            color: #1a9fff;
+            margin-bottom: 1.8rem;
+            text-shadow: 0 0 12px rgba(26, 159, 255, 0.6);
+            font-size: 2.2rem;
         }
 
         p {
-            margin-bottom: 1.5rem;
-            font-size: 1.1rem;
+            margin-bottom: 1.8rem;
+            font-size: 1.15rem;
+            line-height: 1.6;
         }
 
-        a {
-            color: #4CAF50;
+        .btn {
+            display: inline-block;
+            color: white;
             text-decoration: none;
             font-weight: bold;
             transition: all 0.3s ease;
-            border: 1px solid #4CAF50;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            margin: 0 0.5rem;
+            border: 2px solid #1a9fff;
+            padding: 0.7rem 1.5rem;
+            border-radius: 6px;
+            margin: 0 0.8rem;
+            background-color: rgba(26, 159, 255, 0.2);
         }
 
-        a:hover {
-            background-color: #4CAF50;
+        .btn:hover {
+            background-color: #1a9fff;
             color: black;
-            box-shadow: 0 0 15px rgba(76, 175, 80, 0.8);
+            box-shadow: 0 0 20px rgba(26, 159, 255, 0.8);
+            transform: translateY(-2px);
         }
 
         .loading {
             display: inline-block;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border-top-color: #4CAF50;
+            border-top-color: #1a9fff;
             animation: spin 1s ease-in-out infinite;
-            margin-right: 10px;
+            margin-right: 12px;
+            vertical-align: middle;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+
+        .logo {
+            max-width: 180px;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 8px rgba(26, 159, 255, 0.7));
         }
     </style>
     <script>
@@ -84,46 +114,43 @@
 
             if (!ip || !port) {
                 document.querySelector('.container').innerHTML = `
-                    <h1>Error</h1>
-                    <p>IP and port must be specified in the URL.</p>
-                    <p>Example: ?ip=127.0.0.1&port=23073</p>
+                    <h1>Connection Error</h1>
+                    <p>Required parameters missing in URL</p>
+                    <p><strong>Format:</strong> ?ip=1.2.3.4&port=23073&password=123</p>
+                    <a href="javascript:location.reload()" class="btn">Try Again</a>
                 `;
                 return;
             }
 
-            // Build the Soldat URL
             let soldatUrl = `soldat://${ip}:${port}`;
-            if (password) soldatUrl += `/${password}`;
+            if (password) soldatUrl += `/${encodeURIComponent(password)}`;
 
-            // Create hidden iframe to handle the protocol
+            document.getElementById('status').innerHTML = `
+                <span class="loading"></span> Initializing connection to server...
+            `;
+
             const iframe = document.createElement('iframe');
             iframe.style.display = 'none';
             iframe.src = soldatUrl;
             document.body.appendChild(iframe);
             
-            // Show loading state
-            document.getElementById('status').innerHTML = `
-                <span class="loading"></span> Connecting to server...
-            `;
-
-            // Remove iframe after delay
             setTimeout(() => {
                 document.body.removeChild(iframe);
-            }, 1000);
+            }, 1500);
         }
 
-        // Auto-launch when page loads
         window.onload = launchSoldat;
     </script>
 </head>
 <body>
+    <div class="author-badge">by YnGw⚡3</div>
     <div class="container">
         <h1>Soldat Server Connector</h1>
-        <p id="status">Launching Soldat game...</p>
-        <p>
-            <a href="javascript:launchSoldat()">Retry Connection</a>
-            <a href="https://www.soldat.pl" target="_blank">Download Soldat</a>
-        </p>
+        <p id="status">Launching Soldat game client...</p>
+        <div>
+            <a href="javascript:launchSoldat()" class="btn">Reconnect</a>
+            <a href="https://www.soldat.pl" target="_blank" class="btn">Get Soldat</a>
+        </div>
     </div>
 </body>
 </html>
