@@ -107,6 +107,14 @@
             return urlParams.get(name);
         }
 
+        function showConnectedMessage() {
+            document.getElementById('status').innerHTML = `
+                <span style="color:#1a9fff; font-weight:bold; font-size:1.2rem;">
+                    ✔ Connected — you can return to the game!
+                </span>
+            `;
+        }
+
         function launchSoldat() {
             const ip = getQueryParam('ip');
             const port = getQueryParam('port');
@@ -137,24 +145,13 @@
             setTimeout(() => {
                 document.body.removeChild(iframe);
             }, 1500);
-        }
 
-        function closeOrBlank() {
-            // If blocked → fallback to blank page
-            setTimeout(() => {
-                document.getElementById('status').innerHTML = `
-                    <span style="color:#1a9fff; font-weight:bold; font-size:1.2rem;">
-                        ✔ Connected — you can return to the game!
-                    </span>
-                `;
-            }, 50);
+            // Mostrar mensaje de conexión exitosa después de 3 segundos
+            setTimeout(showConnectedMessage, 3000);
         }
 
         window.onload = () => {
             launchSoldat();
-
-            // Close or blank after 3 seconds
-            setTimeout(closeOrBlank, 3000);
         };
     </script>
 </head>
